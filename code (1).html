@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Inventory Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E40AF',
+                        secondary: '#93C5FD',
+                        accent: '#3B82F6'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            transition: all 0.3s;
+        }
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        #calendar {
+            height: 600px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar bg-primary text-white w-64 space-y-6 py-7 px-2 fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition duration-200 ease-in-out z-10">
+            <div class="text-white flex items-center space-x-2 px-4 mb-10">
+                <i class="fas fa-boxes text-2xl"></i>
+                <span class="text-2xl font-extrabold">InvTrack</span>
+            </div>
+            <nav>
+                <a href="#dashboard" class="flex items-center space-x-2 px-4 py-3 text-white hover:bg-blue-800 rounded transition">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#stock-in" class="flex items-center space-x-2 px-4 py-3 text-white hover:bg-blue-800 rounded transition">
+                    <i class="fas fa-arrow-down"></i>
+                    <span>Stock Masuk</span>
+                </a>
+                <a href="#stock-out" class="flex items-center space-x-2 px-4 py-3 text-white hover:bg-blue-800 rounded transition">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>Stock Keluar</span>
+                </a>
+                <a href="#delivery" class="flex items-center space-x-2 px-4 py-3 text-white hover:bg-blue-800 rounded transition">
+                    <i class="fas fa-truck"></i>
+                    <span>Surat Jalan</span>
+                </a>
+                <a href="#purchase-order" class="flex items-center space-x-2 px-4 py-3 text-white hover:bg-blue-800 rounded transition">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Purchase Order</span>
+                </a>
+                <a href="#payments" class="flex items-center space-x-2 px-4 py-3 text-white hover:bg-blue-800 rounded transition">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Payment Tracking</span>
+                </a>
+                <a href="#reports" class="flex items-center space-x-2 px-4 py-3 text-white hover:bg-blue-800 rounded transition">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 md:ml-64">
+            <!-- Header -->
+            <header class="bg-white shadow-sm py-4 px-6 flex justify-between items-center">
+                <div class="flex items-center">
+                    <button id="menu-toggle" class="md:hidden text-gray-500 focus:outline-none">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="text-xl font-semibold text-gray-800 ml-2" id="page-title">Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Search..." class="border rounded-full py-1 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-2 text-gray-400"></i>
+                    </div>
+                    <div class="relative cursor-pointer">
+                        <i class="fas fa-bell text-xl text-gray-600"></i>
+                        <span class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">3</span>
+                    </div>
+                    <div class="flex items-center">
+                        <img src="https://placehold.co/40x40" alt="User profile picture" class="w-8 h-8 rounded-full">
+                        <span class="ml-2 text-gray-700">Admin</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <main class="p-6">
+                <!-- Dashboard Overview -->
+                <div id="dashboard" class="page-section">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                        <div class="card bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500">Total Items</p>
+                                    <h3 class="text-2xl font-bold">1,248</h3>
+                                </div>
+                                <div class="bg-secondary bg-opacity-20 p-3 rounded-full text-primary">
+                                    <i class="fas fa-boxes text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-sm text-green-500">
+                                <i class="fas fa-arrow-up"></i> 5% from last month
+                            </div>
+                        </div>
+                        <div class="card bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500">Pending Orders</p>
+                                    <h3 class="text-2xl font-bold">42</h3>
+                                </div>
+                                <div class="bg-orange-100 p-3 rounded-full text-orange-500">
+                                    <i class="fas fa-clipboard-list text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-sm text-red-500">
+                                <i class="fas fa-arrow-down"></i> 2% from last month
+                            </div>
+                        </div>
+                        <div class="card bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500">Payment Due</p>
+                                    <h3 class="text-2xl font-bold">$12,845</h3>
+                                </div>
+                                <div class="bg-red-100 p-3 rounded-full text-red-500">
+                                    <i class="fas fa-calendar-times text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-sm text-green-500">
+                                <i class="fas fa-arrow-up"></i> 8% from last month
+                            </div>
+                        </div>
+                        <div class="card bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500">Suppliers</p>
+                                    <h3 class="text-2xl font-bold">27</h3>
+                                </div>
+                                <div class="bg-green-100 p-3 rounded-full text-green-500">
+                                    <i class="fas fa-truck-loading text-xl"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-sm text-green-500">
+                                <i class="fas fa-arrow-up"></i> 3% from last month
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <div class="card bg-white rounded-lg shadow p-6">
+                            <h3 class="font-semibold text-lg mb-4">Recent Stock In</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Bearing X203</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">50</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-15</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Hydraulic Oil</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">20</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-14</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Steel Plate 5mm</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">100</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-12</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card bg-white rounded-lg shadow p-6">
+                            <h3 class="font-semibold text-lg mb-4">Upcoming Payments</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PT Steelindo</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$5,200</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-18</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Bearing World</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$3,750</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-20</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Hydraulic Pro</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$2,100</td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-22</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stock In Section -->
+                <div id="stock-in" class="page-section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold">Stock Masuk</h2>
+                        <button class="bg-primary hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Tambah Barang Masuk
+                        </button>
+                    </div>
+                    
+                    <div class="card bg-white rounded-lg shadow p-6 mb-6">
+                        <h3 class="font-semibold text-lg mb-4">Filter Data</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                                <input type="date" class="border rounded w-full py-2 px-3 text-gray-700">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Item</label>
+                                <input type="text" placeholder="Search..." class="border rounded w-full py-2 px-3 text-gray-700">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Supplier</label>
+                                <select class="border rounded w-full py-2 px-3 text-gray-700">
+                                    <option>Pilih Supplier</option>
+                                    <option>PT Steelindo</option>
+                                    <option>Bearing World</option>
+                                    <option>Hydraulic Pro</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <button class="bg-primary hover:bg-blue-700 text-white py-2 px-4 rounded w-full">
+                                    <i class="fas fa-filter mr-2"></i> Filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-4 bg-gray-50 flex justify-between items-center">
+                            <h3 class="font-semibold">Data Stock Masuk</h3>
+                            <div class="flex space-x-2">
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-file-excel"></i>
+                                </button>
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. Item</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. WO</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. PO</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">ITM-001</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bearing X203</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">WO-2023-156</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PO-2023-042</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bearing World</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">50</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-15</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Verified</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex space-x-2">
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">ITM-002</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Hydraulic Oil</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">WO-2023-157</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PO-2023-043</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Hydraulic Pro</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">20</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-14</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Verified</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex space-x-2">
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">ITM-003</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Steel Plate 5mm</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">WO-2023-158</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PO-2023-044</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PT Steelindo</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">100</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-12</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Verified</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex space-x-2">
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200">
+                            <div class="flex-1 flex justify-between items-center">
+                                <div>
+                                    <p class="text-sm text-gray-700">
+                                        Showing <span class="font-medium">1</span> to <span class="font-medium">3</span> of <span class="font-medium">3</span> results
+                                    </p>
+                                </div>
+                                <div>
+                                    <nav class="flex space-x-1">
+                                        <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Previous</span>
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <button class="bg-primary text-white relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium">
+                                            1
+                                        </button>
+                                        <button class="bg-white border border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 text-sm font-medium">
+                                            2
+                                        </button>
+                                        <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Next</span>
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stock Out Section -->
+                <div id="stock-out" class="page-section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold">Stock Keluar</h2>
+                        <button class="bg-primary hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Tambah Barang Keluar
+                        </button>
+                    </div>
+                    
+                    <div class="card bg-white rounded-lg shadow p-6 mb-6">
+                        <h3 class="font-semibold text-lg mb-4">Filter Data</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                                <input type="date" class="border rounded w-full py-2 px-3 text-gray-700">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Item</label>
+                                <input type="text" placeholder="Search..." class="border rounded w-full py-2 px-3 text-gray-700">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nomor WO</label>
+                                <input type="text" placeholder="Search..." class="border rounded w-full py-2 px-3 text-gray-700">
+                            </div>
+                            <div class="flex items-end">
+                                <button class="bg-primary hover:bg-blue-700 text-white py-2 px-4 rounded w-full">
+                                    <i class="fas fa-filter mr-2"></i> Filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-4 bg-gray-50 flex justify-between items-center">
+                            <h3 class="font-semibold">Data Stock Keluar</h3>
+                            <div class="flex space-x-2">
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-file-excel"></i>
+                                </button>
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. Item</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Barang</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. WO</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pelanggan</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">ITM-001</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bearing X203</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">WO-2023-156</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PT Maju Jaya</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">20</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-16</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Delivered</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex space-x-2">
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-file-invoice"></i>
+                                                </button>
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">ITM-002</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Hydraulic Oil</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">WO-2023-157</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PT Teknik Mandiri</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">5</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-15</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Pending</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex space-x-2">
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-file-invoice"></i>
+                                                </button>
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200">
+                            <div class="flex-1 flex justify-between items-center">
+                                <div>
+                                    <p class="text-sm text-gray-700">
+                                        Showing <span class="font-medium">1</span> to <span class="font-medium">2</span> of <span class="font-medium">2</span> results
+                                    </p>
+                                </div>
+                                <div>
+                                    <nav class="flex space-x-1">
+                                        <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Previous</span>
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <button class="bg-primary text-white relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium">
+                                            1
+                                        </button>
+                                        <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Next</span>
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery Note Section -->
+                <div id="delivery" class="page-section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold">Surat Jalan</h2>
+                        <button class="bg-primary hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Buat Surat Jalan
+                        </button>
+                    </div>
+                    
+                    <div class="card bg-white rounded-lg shadow overflow-hidden mb-6">
+                        <div class="p-4 bg-gray-50">
+                            <h3 class="font-semibold">Preview Surat Jalan</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="border-2 border-gray-200 p-6 rounded-lg">
+                                <div class="flex justify-between mb-6">
+                                    <div>
+                                        <h3 class="text-xl font-bold">PT INVTRACK INDONESIA</h3>
+                                        <p class="text-gray-600">Jl. Industri Raya No. 123, Jakarta</p>
+                                        <p class="text-gray-600">Telp: (021) 9876543</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <h2 class="text-xl font-bold">SURAT JALAN</h2>
+                                        <p class="text-gray-600">No: SJ-2023-042</p>
+                                        <p class="text-gray-600">Tanggal: 2023-06-16</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <div class="mb-4">
+                                        <h4 class="font-semibold">Kepada:</h4>
+                                        <p>PT Maju Jaya</p>
+                                        <p>Jl. Perkantoran No. 456, Jakarta</p>
+                                        <p>Contact: Budi (08123456789)</p>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold">No. WO:</h4>
+                                        <p>WO-2023-156</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <table class="min-w-full border border-gray-200">
+                                        <thead class="bg-gray-100">
+                                            <tr>
+                                                <th class="px-4 py-2 text-left border">No.</th>
+                                                <th class="px-4 py-2 text-left border">Nama Barang</th>
+                                                <th class="px-4 py-2 text-left border">Kode Barang</th>
+                                                <th class="px-4 py-2 text-left border">Qty</th>
+                                                <th class="px-4 py-2 text-left border">Satuan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="px-4 py-2 border">1</td>
+                                                <td class="px-4 py-2 border">Bearing X203</td>
+                                                <td class="px-4 py-2 border">ITM-001</td>
+                                                <td class="px-4 py-2 border">20</td>
+                                                <td class="px-4 py-2 border">pcs</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div class="flex justify-between">
+                                    <div class="text-center w-1/3">
+                                        <p>Dibuat oleh,</p>
+                                        <div class="mt-16"></div>
+                                        <p class="font-semibold">Admin Gudang</p>
+                                    </div>
+                                    <div class="text-center w-1/3">
+                                        <p>Diserahkan oleh,</p>
+                                        <div class="mt-16"></div>
+                                        <p class="font-semibold">Ekspedisi</p>
+                                    </div>
+                                    <div class="text-center w-1/3">
+                                        <p>Diterima oleh,</p>
+                                        <div class="mt-16"></div>
+                                        <p class="font-semibold">PT Maju Jaya</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 flex justify-end space-x-4">
+                                <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded">
+                                    <i class="fas fa-print mr-2"></i> Print
+                                </button>
+                                <button class="bg-primary hover:bg-blue-700 text-white py-2 px-4 rounded">
+                                    <i class="fas fa-download mr-2"></i> Download PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-4 bg-gray-50 flex justify-between items-center">
+                            <h3 class="font-semibold">Daftar Surat Jalan</h3>
+                            <div class="flex space-x-2">
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-file-excel"></i>
+                                </button>
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. SJ</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pelanggan</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. WO</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">SJ-2023-042</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-16</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PT Maju Jaya</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">WO-2023-156</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Delivered</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex space-x-2">
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-print"></i>
+                                                </button>
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-download"></i>
+                                                </button>
+                                                <button class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Purchase Order Section -->
+                <div id="purchase-order" class="page-section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold">Purchase Order</h2>
+                        <button class="bg-primary hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Buat PO Baru
+                        </button>
+                    </div>
+                    
+                    <div class="card bg-white rounded-lg shadow overflow-hidden mb-6">
+                        <div class="p-4 bg-gray-50">
+                            <div class="flex justify-between items-center">
+                                <h3 class="font-semibold">PO Summary</h3>
+                                <div>
+                                    <select class="border rounded py-1 px-2 text-sm">
+                                        <option>Last 7 days</option>
+                                        <option>Last 30 days</option>
+                                        <option>Last 90 days</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+                            <div class="border rounded-lg p-4">
+                                <div class="flex items-center mb-2">
+                                    <div class="bg-orange-100 p-3 rounded-full mr-4">
+                                        <i class="fas fa-file-invoice text-orange-500"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Total PO</p>
+                                        <h3 class="text-xl font-bold">42</h3>
+                                    </div>
+                                </div>
+                                <div class="flex items-center text-sm mt-2">
+                                    <span class="text-green-500 mr-1"><i class="fas fa-arrow-up"></i> 12%</span>
+                                    <span class="text-gray-500">vs last month</span>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg p-4">
+                                <div class="flex items-center mb-2">
+                                    <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                        <i class="fas fa-check-circle text-blue-500"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Completed</p>
+                                        <h3 class="text-xl font-bold">28</h3>
+                                    </div>
+                                </div>
+                                <div class="flex items-center text-sm mt-2">
+                                    <span class="text-green-500 mr-1"><i class="fas fa-arrow-up"></i> 8%</span>
+                                    <span class="text-gray-500">vs last month</span>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg p-4">
+                                <div class="flex items-center mb-2">
+                                    <div class="bg-yellow-100 p-3 rounded-full mr-4">
+                                        <i class="fas fa-clock text-yellow-500"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500">Pending</p>
+                                        <h3 class="text-xl font-bold">14</h3>
+                                    </div>
+                                </div>
+                                <div class="flex items-center text-sm mt-2">
+                                    <span class="text-red-500 mr-1"><i class="fas fa-arrow-down"></i> 4%</span>
+                                    <span class="text-gray-500">vs last month</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-4 bg-gray-50 flex justify-between items-center">
+                            <div class="flex items-center space-x-4">
+                                <h3 class="font-semibold">Data Purchase Order</h3>
+                                <div class="relative">
+                                    <input type="text" placeholder="Search PO..." class="border rounded py-1 px-3 pl-8 text-sm">
+                                    <i class="fas fa-search absolute left-3 top-2 text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-file-excel"></i>
+                                </button>
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. PO</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. WO</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PO-2023-044</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-10</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PT Steelindo</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$2,500</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">WO-2023-158</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex space-x-2">
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PO-2023-043</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-08</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Hydraulic Pro</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$1,200</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">WO-2023-157</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex space-x-2">
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PO-2023-042</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-05</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bearing World</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$3,000</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">WO-2023-156</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex space-x-2">
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200">
+                            <div class="flex-1 flex justify-between items-center">
+                                <div>
+                                    <p class="text-sm text-gray-700">
+                                        Showing <span class="font-medium">1</span> to <span class="font-medium">3</span> of <span class="font-medium">3</span> results
+                                    </p>
+                                </div>
+                                <div>
+                                    <nav class="flex space-x-1">
+                                        <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Previous</span>
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <button class="bg-primary text-white relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium">
+                                            1
+                                        </button>
+                                        <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Next</span>
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Tracking Section -->
+                <div id="payments" class="page-section hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold">Payment Tracking</h2>
+                        <div class="flex space-x-2">
+                            <button class="bg-primary hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center">
+                                <i class="fas fa-plus mr-2"></i> Tambah Pembayaran
+                            </button>
+                            <button class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded flex items-center">
+                                <i class="fas fa-sync-alt mr-2"></i> Sync Due Date
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card bg-white rounded-lg shadow overflow-hidden mb-6">
+                        <div class="p-4 bg-gray-50">
+                            <div class="flex justify-between items-center">
+                                <h3 class="font-semibold">Payment Calendar</h3>
+                                <div class="flex space-x-2">
+                                    <select class="border rounded py-1 px-2 text-sm">
+                                        <option>Month</option>
+                                        <option>Week</option>
+                                        <option>Day</option>
+                                        <option>List</option>
+                                    </select>
+                                    <button class="bg-primary hover:bg-blue-700 text-white py-1 px-3 rounded text-sm">
+                                        Today
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div id="calendar" class="bg-white rounded-lg shadow-sm">
+                                <!-- Calendar will be rendered here -->
+                                <img src="https://placehold.co/1200x600" alt="Interactive calendar showing payment due dates with blue highlights for upcoming payments" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bg-white rounded-lg shadow">
+                        <div class="p-4 bg-gray-50 flex justify-between items-center">
+                            <div class="flex items-center space-x-4">
+                                <h3 class="font-semibold">Payment Schedule</h3>
+                                <select class="border rounded py-1 px-2 text-sm">
+                                    <option>All Status</option>
+                                    <option>Pending</option>
+                                    <option>Paid</option>
+                                    <option>Overdue</option>
+                                    <option>Upcoming</option>
+                                </select>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-file-excel"></i>
+                                </button>
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                                <button class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Term</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PAY-2023-018</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PT Steelindo</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$5,200</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-18</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">30 days after delivery</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Upcoming</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex space-x-2">
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-money-bill-wave"></i>
+                                                </button>
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PAY-2023-017</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Bearing World</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$3,750</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-20</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Net 30</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Upcoming</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex space-x-2">
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-money-bill-wave"></i>
+                                                </button>
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">PAY-2023-016</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Hydraulic Pro</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">$2,100</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">2023-06-22</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">15 days after invoice</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Upcoming</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div class="flex space-x-2">
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-money-bill-wave"></i>
+                                                </button>
+                                                <button class="text-primary hover:text-blue-700">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="text-red-500 hover:text-red-700">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="bg-gray-50 px-4 py-3 flex items-center justify-between border-t border-gray-200">
+                            <div class="flex-1 flex justify-between items-center">
+                                <div>
+                                    <p class="text-sm text-gray-700">
+                                        Showing <span class="font-medium">1</span> to <span class="font-medium">3</span> of <span class="font-medium">3</span> results
+                                    </p>
+                                </div>
+                                <div>
+                                    <nav class="flex space-x-1">
+                                        <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Previous</span>
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <button class="bg-primary text-white relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium">
+                                            1
+                                        </button>
+                                        <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                            <span class="sr-only">Next</span>
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('-translate-x-full');
+        });
+
+        // Page navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide all sections first
+            const sections = document.querySelectorAll('.page-section');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show dashboard by default
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('page-title').textContent = 'Dashboard';
+            
+            // Handle sidebar navigation
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get target section ID from href
+                    const targetId = this.getAttribute('href').substring(1);
+                    
+                    // Hide all sections
+                    sections.forEach(section => {
+                        section.classList.add('hidden');
+                    });
+                    
+                    // Show target section
+                    document.getElementById(targetId).classList.remove('hidden');
+                    
+                    // Update page title
+                    document.getElementById('page-title').textContent = this.querySelector('span').textContent;
+                    
+                    // Close mobile menu if open
+                    document.querySelector('.sidebar').classList.add('-translate-x-full');
+                });
+            });
+        });
+
+        // Form submission for adding new items
+        document.querySelectorAll('button[class*="bg-primary"]').forEach(button => {
+            button.addEventListener('click', function() {
+                // Get section ID from parent
+                const section = this.closest('.page-section');
+                const sectionId = section ? section.id : '';
+                
+                // Show appropriate modal based on section
+                alert(`Form untuk menambahkan ${sectionId.replace('-', ' ')} akan muncul di sini`);
+            });
+        });
+
+        // Sample auto-sync function for payment due dates
+        function syncPaymentDueDates() {
+            alert('Sistem akan menghitung ulang tanggal jatuh tempo pembayaran berdasarkan tanggal barang masuk + ketentuan pembayaran');
+        }
+
+        // Sample function to generate delivery note
+        function generateDeliveryNote() {
+            alert('Surat jalan berhasil digenerate dan stok akan dikurangi otomatis');
+        }
+
+        // Sample function for PO syncing when items arrive
+        function syncPOWithStockIn() {
+            alert('Purchase Order akan disinkronkan dengan barang yang masuk');
+        }
+    </script>
+</body>
+</html>
